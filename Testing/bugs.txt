@@ -1,0 +1,12 @@
+4/18/2024
+    -Initial log, game is running at a minimum. Need to fix a lot of bugs and overall function of the game.
+    -Main program set up great, just being able to call game.Start()
+    -Only possible to play one hand (one player) vs the dealer (WORKING)
+    -Also does not display the last card before a bust - (FIXED)
+    -Console out is glitchy, need to figure out a way to update quicker, reduce lag (FIXED/SMOOTHER)
+    -Need to add splitting, and doubling - fix current first (FIXED SPLITTING/STARTED)
+    -Ace logic is definitely wrong lol, AFTER 11 IS ADDING 11
+
+
+4/18
+    - Dealer flipping after split, fix
