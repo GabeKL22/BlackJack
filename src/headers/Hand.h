@@ -41,6 +41,7 @@ public:
 
     void ClearHand() {
         cards.clear();
+        total == 0;
     }
 
     void UpdateTotal() {

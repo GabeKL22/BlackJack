@@ -1,0 +1,19 @@
+adding a lot to v2, bring up from nothing (the game file that is)
+- Important things I want to include that v1 didn't have:
+    - Splitting
+    - Currency
+        - Doubling
+        - Balance
+        - Rebuy Option
+        - etc. I'm sure I'll think of more 
+    - Multiple Players
+    - Cleaner Functions, seperating ConsoleOut and Debug functions, these really stuffed the Game.h file and made thing hard to find
+    - Add more to Player and Dealer classes, don't need to call everything from Game
+    - Better state handling, Pass the current State in and Let the game do it 
+    - Bring the game up first, then add balance tracking/doubling - should be easy once everything else works
+    - Put player option under name so when they stand, it would displau:
+                HAND 1             HAND 2
+                -----              -----
+                9♥ 5♦              Q♣ T♦
+                Total: 14          Total: 20 
+                STAND              STAND

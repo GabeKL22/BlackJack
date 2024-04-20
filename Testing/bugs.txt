@@ -10,3 +10,6 @@
 
 4/18
     - Dealer flipping after split, fix
+
+4/19
+    - Gives BlackJack to player with 21 after hitting (8,11) -> hit -> (10) -> BlackJack, no BJ here just a 21, wait for dealer 

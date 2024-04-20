@@ -12,6 +12,15 @@
 
 using namespace std;
 
+enum class DealerStates_e {
+    BLACKJACK,
+    BUST,
+    STAND,
+    HIT,
+    DEAL,
+    WAIT_FOR_PLAYERS
+};
+
 class Dealer {
 public:
     Dealer() : shoe(6), currentHand() {  
@@ -36,7 +45,7 @@ public:
     }
 
     bool BlackJack() {
-        if (currentHand.GetHandValue() == 21) {
+        if (currentHand.GetHandValue() == 21 && currentHand.GetHandSize() == 2) {
             return true;
         }
         else {
@@ -65,8 +74,17 @@ public:
         return card;
     }
 
+    DealerStates_e GetDealerState() {
+        return state;
+    }
+
+    void SetDealerState(DealerStates_e dealerState) {
+        state = dealerState;
+    }
+
 private:
     Deck shoe;
+    DealerStates_e state;
 };
 
 #endif
