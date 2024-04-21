@@ -1,6 +1,14 @@
 Weekend BlackJack Project in C++
 - Console app
 
+Running the program:
+- v1.0 
+- v2.0
+    - Clone the repository `git clone https://github.com/GabeKL22/BlackJack.git`
+    - `cd Path/To/BlackJack`
+    - type `make` to clean the program (remove executable) type `make clean`
+    - in the `Makefile` I execute a chmod command to give execute permissions to the created `BlackJack` executable. You may not need this, I did on my server. 
+    - To run the BlackJack game type `./BlackJack`
 
 
 Explantation of Game_v2.h:

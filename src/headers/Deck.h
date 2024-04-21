@@ -16,17 +16,19 @@ static int maxCards = 0;
 
 class Deck {
 public:
+    /* Constructor */
     Deck(int numberOfDecks = 6) {
         // might need to set up more here late 
         // very redundant as of now 
         GenerateDecks(numberOfDecks);
     }
-    
+    /* isEmpy() - true if decks is empty */
     bool isEmpty() {
         return decks.empty();
     }
     
     // rather throw them all in and shuffle then deal with an almost 2d structure (over complicates things)
+    /* GenerateDecks() - generate the Decks for the game*/
     void GenerateDecks(int numberOfDecks) {
         for (int i = 0; i < numberOfDecks; i++) {
             maxCards = numberOfDecks * CARDS_IN_ONE_DECK;
@@ -39,7 +41,7 @@ public:
         }
     }
 
-    //  
+    /* PrintDeck() - print the deck, used for debugging purposed, can move this to ConsoleOut in the future*/
     void PrintDeck(string print, bool printAll = true, int numPrint = maxCards) {
         if (printAll)
         {
@@ -55,7 +57,7 @@ public:
         }
     }
 
-    // shuffle the deck (entire deck)
+    /* ShuffleDeck() - shuffle the deck (entire deck) */
     void ShuffleDeck(int numTimes) {
         for (int i = 0; i < numTimes; i++)
         {
@@ -64,6 +66,7 @@ public:
         CopyToStack();
     }
 
+    /* CopyToStack() - copy the vector<string> deck into a Stack*/
     void CopyToStack() {
         for (auto const& c : deck)
         {
@@ -71,10 +74,12 @@ public:
         }
     }
 
+    /* BurnCard() - burn a card */
     void BurnCard() {
         decks.pop();
     }
 
+    /* GetCard() - return a card from the deck*/
     string GetCard() {
         string card = decks.top();
         decks.pop();  
