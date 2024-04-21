@@ -43,13 +43,7 @@ public:
         }
     }
 
-
-    // void Split() {
-        // do this in game? 
-    // }
     Hand currentHand;
-
-
 
     ////////////////////
     //TESTTING FUNCTIONS

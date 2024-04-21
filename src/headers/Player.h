@@ -74,6 +74,7 @@ public:
     }
 
     // simulate a split as another Player
+    // Keeping track for UI Output
     bool split; // for split
     bool hasSplit; // for original
 
