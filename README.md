@@ -1,2 +1,2 @@
-#Weekend BlackJack Project in C++
+Weekend BlackJack Project in C++
 - Console app
