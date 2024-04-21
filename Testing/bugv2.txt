@@ -37,4 +37,5 @@ Splitting Troubles
     - Set the ID to the original instance, 
         - with this it would be cool to then not just loop through the vector but instead, loop through each ID (could get complicated)
 - GO BACK AND CHANGE p.currentHand.Add(dealer.Deal()); to Hit
-DOUBLE AFTER SPLITTING (Need to add this soon)
+DOUBLE AFTER SPLITTING (Need to add this soon) -> Complicated with the current way I'm doing it.
+PAYOUTS AFTER SPLITTING

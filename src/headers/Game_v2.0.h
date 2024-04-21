@@ -83,7 +83,7 @@ public:
                 cout << "RunGame() - DealGame() Ran..\n";
                 //start the game
                 print.Hands(dealer, players, true);
-                sleep(5); // chill for a sec
+                sleep(1); // chill for a sec
                 if (dealer.BlackJack()) {
                     // no insurance atm
                     dealer.SetDealerState(DealerStates_e::BLACKJACK);
@@ -100,7 +100,7 @@ public:
                             RunPlayerOption(players[it]);
                             CheckPlayerHand(players[it]);
                             print.Hands(dealer, players, true);
-                            sleep(5);
+                            // sleep(5);
                         }
                         if (players[it].BlackJack()) {
                             // will have to write above / do the prints
@@ -117,18 +117,30 @@ public:
                 SetOutcome();  // Final Outcome, everyone stood or busted
                 GetOutcome();
                 print.Hands(dealer, players, false, true);
-                sleep(5);
+                // sleep(5);
                 PlayAgain();
             }
 
         }
     }
 
+    bool ContainsSplit() {
+        for (auto &player : players) {
+            if (player.split) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void PlayAgain() {
         print.Dealing();
-        players = playersCopyForSplit;
+        if (ContainsSplit()) {
+            players = playersCopyForSplit;
+        }
         for (auto &player : players) {
             player.currentHand.ClearHand();
+            player.GetBalance().ClearBetSize();
             player.SetPlayerState(PlayerStates_e::PLAYING);
         }
         dealer.currentHand.ClearHand();
@@ -392,12 +404,12 @@ public:
         bool retVal = false;
         while (rounds <= 2 && rounds++) {
             for (auto &player : players) {
-                player.currentHand.Add(dealer.DealSplit());
+                player.currentHand.Add(dealer.Deal());
                 if (player.currentHand.GetHandSize() == 2) {
                     retVal = true;
                 }
             }
-            dealer.currentHand.Add(dealer.DealSplit());
+            dealer.currentHand.Add(dealer.Deal());
         }
         dealer.SetDealerState(DealerStates_e::WAIT_FOR_PLAYERS);    
         return retVal && dealer.currentHand.GetHandSize() == 2;
