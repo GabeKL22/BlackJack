@@ -6,17 +6,26 @@
 #include <iomanip>
 #include <sstream>
 
-#include "Game_v2.0.h"
 #include "Player.h"
 #include "Dealer.h"
 
 using namespace std;
+
 
 /*
     For ConsoleOut during game, v1 Game got messy with all of the printing functions and logic...
 */
 class ConsoleOut {
 public:
+
+    void AskBetAmount(int playerId, double &betAmount) {
+        cout << "Player [" << playerId << "] bet Amount: $";
+        cin >> betAmount;
+    }
+
+    void PlayerBalance(Player p) {
+        cout << "Balance: " << p.GetBalance().GetAmount();
+    }
 
     void Dealing() {
         cout << "Dealing...\n";
@@ -76,7 +85,7 @@ public:
 
 
     // Look above lol ^^^^ Thanks ChatGPT
-    void Hands(Dealer dealer, vector<Player> players, bool hideDealer) {
+    void Hands(Dealer dealer, vector<Player> players, bool hideDealer, bool showWinning = false) {
         system("clear");
         cout << "\nDEALER\n"
                   << "-------\n"
@@ -100,7 +109,14 @@ public:
             auto& line = playerLines[i];
 
             // Format and append the player hand label
-            line << "HAND " << player.GetPlayerId() << ":\n";
+            line << "HAND " << player.GetPlayerId();
+            
+            if (player.split) {
+                line << " (S)\n";
+            }
+            else {
+                line << "\n";
+            }
 
             // Append cards with padding for alignment
             for (const auto& card : player.currentHand.GetCards()) {
@@ -109,12 +125,25 @@ public:
             line << setw(maxCardsWidth - player.currentHand.GetHandSize() * 3) << " ";
 
             // Append total value or blackjack
-            line << "Total: " << (player.BlackJack() ? "BlackJack" : to_string(player.currentHand.GetHandValue())) << "\n";
+            line << "Total: " << (player.BlackJack() ? "BlackJack" : to_string(player.currentHand.GetHandValue()));
 
             // Append player's outcome state
             if (player.GetPlayerState() == PlayerStates_e::WIN || player.GetPlayerState() == PlayerStates_e::LOST || player.GetPlayerState() == PlayerStates_e::PUSH || player.GetPlayerState() == PlayerStates_e::STAND || player.GetPlayerState() == PlayerStates_e::BUST || player.GetPlayerState() == PlayerStates_e::DOUBLE) {
-                line << player.GetPlayerStateString();
+                line << " " << player.GetPlayerStateString();
             }
+                
+            // AFTER CARDS
+            // Append Players Bet size
+            if (!player.hasSplit) {
+                line << "\nBet: $" << player.GetBalance().GetBetSize();
+
+                line << "  Balance: $" << player.GetBalance().GetAmount();
+        
+                if (showWinning) {
+                    line << " Payout: $" << player.GetBalance().GetLastWonAmount();
+                }
+            }
+
             line << "\n\n"; // Ensure two newlines at the end of each player's section
         }
 

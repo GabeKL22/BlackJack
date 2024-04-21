@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Deck.h"
-#include "Player.h"
 #include "Hand.h"
 
 #define SHUFFLES 10
@@ -33,15 +32,6 @@ public:
             return shoe.GetCard();
         }
         return "\nEmpty Shoe\n";
-    }
-
-    // check for real amount later 
-    void PayOut(double betAmount, Player &P) {
-        P.Give(betAmount);
-    }   
-
-    void TakeMoney(double betAmount, Player &P) {
-        P.Take(betAmount);
     }
 
     bool BlackJack() {

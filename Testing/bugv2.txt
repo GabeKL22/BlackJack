@@ -17,3 +17,24 @@ adding a lot to v2, bring up from nothing (the game file that is)
                 9♥ 5♦              Q♣ T♦
                 Total: 14          Total: 20 
                 STAND              STAND
+AFTER SECOND COMMIT:
+    - Running well, Just added Currency to the game, also doubling down
+    - UI Is CLI and very simple, can focus more on that after fully functional
+    - Future plans to set up tests, would be cool to run this as a simulation to run data off of
+
+    Some Bug Still
+    - Double down state displays Stand?
+    - Payouts can be weird sometimes
+    - Honesty haven't kept track of the total balance of the players TODO
+        - need to set up something to do this 
+    - No splitting... ugh 
+
+
+Splitting Troubles
+- Starting the split functionality
+- Thoughts
+    - Could create a new Player and add the second card (take it away from original Player instance)
+    - Set the ID to the original instance, 
+        - with this it would be cool to then not just loop through the vector but instead, loop through each ID (could get complicated)
+- GO BACK AND CHANGE p.currentHand.Add(dealer.Deal()); to Hit
+DOUBLE AFTER SPLITTING (Need to add this soon)

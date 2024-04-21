@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
+#include <iterator>
 
 #include "Player.h"
 #include "Dealer.h"
@@ -71,6 +73,7 @@ public:
     }
 
     void RunGame() {
+        PlaceBets();
         if (dealer.GetDealerState() == DealerStates_e::DEAL) {
             // cout << "RunGame() - Dealer State = DEAL\n";
             // deal the initial cards
@@ -87,23 +90,24 @@ public:
                     CheckForPush(dealer.currentHand.GetHandValue()); // check for the tie
                 }
                 else {
-                    for (auto &player : players) {
-                        while (dealer.GetDealerState() == DealerStates_e::WAIT_FOR_PLAYERS && !player.BlackJack() && player.GetPlayerState() != PlayerStates_e::STAND && player.GetPlayerState() != PlayerStates_e::BUST) {
+                    // need to switch to indexing, so that I don't have problems adding to it 
+                    for (int it = 0; it < players.size(); it++) {
+                        while (dealer.GetDealerState() == DealerStates_e::WAIT_FOR_PLAYERS && !players[it].BlackJack() && players[it].GetPlayerState() != PlayerStates_e::STAND && players[it].GetPlayerState() != PlayerStates_e::BUST) {
                             // DO ALL THE STUFF, after this dealer can do it's finishing flips 
                             char input;
-                            print.PlayerOptions(input, player);
-                            SetPlayerOption(input, player);
-                            RunPlayerOption(player);
-                            CheckPlayerHand(player);
+                            print.PlayerOptions(input, players[it]);
+                            SetPlayerOption(input, players[it]);
+                            RunPlayerOption(players[it]);
+                            CheckPlayerHand(players[it]);
                             print.Hands(dealer, players, true);
                             sleep(5);
                         }
-                        if (player.BlackJack()) {
+                        if (players[it].BlackJack()) {
                             // will have to write above / do the prints
-                            player.SetPlayerState(PlayerStates_e::WIN);
-                            player.currentHand.ClearHand();
-                            // PayoutBlackJack(player.GetBetSize());
-                            // ConsoleLog.PrintPlayerBlackJack(player))
+                            players[it].SetPlayerState(PlayerStates_e::WIN);
+                            players[it].currentHand.ClearHand();
+                            players[it].GetBalance().PayBlackJack(players[it].GetBalance().GetBetSize());
+                            // ConsoleLog.PrintPlayerBlackJack(players[it]))
                         }
                         // Standing/Skip this player
                     }
@@ -112,7 +116,7 @@ public:
                 }
                 SetOutcome();  // Final Outcome, everyone stood or busted
                 GetOutcome();
-                print.Hands(dealer, players, false);
+                print.Hands(dealer, players, false, true);
                 sleep(5);
                 PlayAgain();
             }
@@ -122,6 +126,7 @@ public:
 
     void PlayAgain() {
         print.Dealing();
+        players = playersCopyForSplit;
         for (auto &player : players) {
             player.currentHand.ClearHand();
             player.SetPlayerState(PlayerStates_e::PLAYING);
@@ -146,17 +151,27 @@ public:
     /*
     Pay the players
     */
+    void PlaceBets() {
+        for (auto &player : players) {
+            double betAmount;
+            print.AskBetAmount(player.GetPlayerId() ,betAmount);
+            player.GetBalance().Bet(betAmount);
+        }
+    }
+
     void GetOutcome() {
         for (auto &player : players) {
             switch (player.GetPlayerState()) {
                 case PlayerStates_e::WIN:
-                    // player.PayOut(player.BetSize());
+                    player.GetBalance().Pay(player.GetBalance().GetBetSize(), true);
                     break;
                 case PlayerStates_e::LOST:
-                    // player.Take(player.BetSize());
+                    // don't have to do anything rn, technically took it away already
+                    player.GetBalance().SetLastWonAmount(0);
                     break;
                 case PlayerStates_e::PUSH:
                     // do nothing
+                    player.GetBalance().Pay(player.GetBalance().GetBetSize(), false);
                     break;
             }
         }
@@ -278,7 +293,6 @@ public:
         }
     }
 
-
     /*
     Run the players option
     */
@@ -286,22 +300,22 @@ public:
         switch (p.GetPlayerState()) {
             case PlayerStates_e::HIT:
             {
+                // TODO: Hit(p)?
                 p.currentHand.Add(dealer.Deal());
                 break;
             }
             case PlayerStates_e::DOUBLE:
             {
-                // Do balance stuff here
-
-                //
                 p.currentHand.Add(dealer.Deal());
                 p.SetPlayerState(PlayerStates_e::STAND);
+                p.GetBalance().DoubleDown();
                 break;
             }
             case PlayerStates_e::SPLIT:
             {
                 // Do Splitting stuff
-                // Split(p);
+                Split(p);
+                break;
             }
             case PlayerStates_e::STAND:
             default:   // fall through
@@ -311,6 +325,45 @@ public:
 
         }
     };
+
+    /*
+    We're splitting, need to create an Instance of Player and take the second card
+    from the calling instance and give it to the new one
+
+    Splits:
+        10, 10
+        split, Original hand hits first, keeps hitting (unless ACE), until stand or bust 
+    */
+    void Split(Player &p) {
+        playersCopyForSplit = players;
+        // fix player stuff, NEED TO FIGURE OUT BALANCE
+
+        Player temp = Player(p.GetPlayerId(), true); 
+        p.GetBalance().Bet(p.GetBalance().GetBetSize());
+        temp.GetBalance().SetAmount(p.GetBalance().GetAmount());
+        temp.currentHand.Add(p.currentHand.GetCards()[1]); // add their second card
+        temp.GetBalance().SetBetAmount(p.GetBalance().GetBetSize());
+        temp.split = true;
+        p.hasSplit = true;
+        p.currentHand.TakeCard(); // take it away from first hand 
+
+        // deal them two cards
+        p.currentHand.Add(dealer.Deal());
+        temp.currentHand.Add(dealer.Deal());
+
+        // add split to Players vector
+        players.push_back(temp);
+        SortPlayerIdsForSplit();
+        print.Hands(dealer, players, true);
+    }
+
+    void SortPlayerIdsForSplit() {
+        // Sort the vector by player ID
+        // pretty cool stuff here
+        sort(players.begin(), players.end(), [](const Player& a, const Player& b) {
+            return a.GetPlayerId() < b.GetPlayerId();
+        });
+    }
 
     /*
     Stand/Do Nothing
@@ -339,12 +392,12 @@ public:
         bool retVal = false;
         while (rounds <= 2 && rounds++) {
             for (auto &player : players) {
-                player.currentHand.Add(dealer.Deal());
+                player.currentHand.Add(dealer.DealSplit());
                 if (player.currentHand.GetHandSize() == 2) {
                     retVal = true;
                 }
             }
-            dealer.currentHand.Add(dealer.Deal());
+            dealer.currentHand.Add(dealer.DealSplit());
         }
         dealer.SetDealerState(DealerStates_e::WAIT_FOR_PLAYERS);    
         return retVal && dealer.currentHand.GetHandSize() == 2;
@@ -358,10 +411,23 @@ public:
         players.push_back(p);
     }
 
+    /*
+    Return the index of the player vector that matches the giving ID
+    might not even need this lol
+    */
+    int GetPlayerById(int findId) {
+        for (int i = 0; i < players.size(); i++) {
+            if(players[i].GetPlayerId() == findId) {
+                return i;
+            }
+        }
+        return -1; // could not find ID
+    }
 private:
     ConsoleOut print;
     Debug debug;
     vector<Player> players;
+    vector<Player> playersCopyForSplit; // might have a problem after PlayAgain() without copying to this 
     Dealer dealer;
     GameStates_e gameState;
 };

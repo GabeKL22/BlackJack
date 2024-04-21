@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "Hand.h"
+#include "Currency.h"
 
 // can do action in Game while playing, get choice, then do the action of their new state
 // if OK after let's say a HIT, the state would go back to PLAYING and we would run through the choices again 
@@ -23,9 +24,8 @@ enum class PlayerStates_e {
 
 class Player {
 public:
-    Player(int id, int startingBalance = 0) {
-        balance = startingBalance;
-        playerId = id;
+    Player(int id, double startingBalance = 300, bool isSplit = false)
+        : playerId(id), balance(false, startingBalance), split(isSplit) {
     }
 
     bool BlackJack() {
@@ -37,26 +37,7 @@ public:
         }
     }
     
-    // keep track of winning in Game.h
-    void Give(double amount) {
-        balance += amount;
-    }
-
-    // can take out for now, remeber to 
-    void Take(double amount) {
-        balance -= amount;
-    }
-
-    double Balance() {
-        return balance;
-    }
-
-    // figure out in game, pay out double (bet + winning) to balance
-    void PlaceBet(double amount) {
-        Take(amount);
-    }
-
-    int GetPlayerId() {
+    int GetPlayerId() const {
         return playerId;
     }
 
@@ -88,11 +69,21 @@ public:
         state = playerState;
     }
 
+    Currency& GetBalance() {
+        return balance;
+    }
+
+    // simulate a split as another Player
+    bool split; // for split
+    bool hasSplit; // for original
+
     Hand currentHand;
 private:
     PlayerStates_e state;
     int playerId;
-    double balance;
+    Currency balance;
+
+
 
 };  
 
