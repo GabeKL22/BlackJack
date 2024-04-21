@@ -1,13 +1,9 @@
-RUN = g++
-CFLAGS = 0
-OBJ =
-MAIN = rungame.cpp
-TEST = 0
+all: my_program
 
-run: $(MAIN) $(OBJ)
-	$(RUN) -c -o $@ $<
+my_program: BlackJack.o
+	g++ -o BlackJack BlackJack.o
+	chmod +x BlackJack
 
-
-.PHONY: clean
 clean:
-	rm run
+	rm -f BlackJack BlackJack.o
+

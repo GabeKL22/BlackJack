@@ -5,16 +5,11 @@
 #include "src/headers/ConsoleOut.h"
 
 int main() {
-
-    // Cards c = Cards();
-    // c.printDeck();
-    // cout << c.getCardDeckSize();
-
     // v1
     // Game game = Game();
     // game.Start();
 
-
+    // v2
     ConsoleOut print;
     int numberOfPlayers;
     print.GameStart(numberOfPlayers);
